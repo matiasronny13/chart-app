@@ -1,0 +1,25 @@
+* {
+  margin: 0px;
+  padding: 0px;
+  box-sizing: border-box;
+}
+
+.legend {
+  color: orange;
+  font-size: small;
+  font-weight: bold;
+  display: flex;
+  gap: 10px;
+  position: absolute;
+  z-index: 9;
+  padding: 15px
+}
+
+.legend span {
+  margin-right: 2px;
+}
+
+.legend .legend-value {
+  color: white;
+  font-weight: lighter;  
+}

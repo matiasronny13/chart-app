@@ -1,0 +1,1 @@
+export const getBarColor = (open: number, close: number) => close >= open ? 'rgba(230,240,255,0.3)' : 'rgba(0,128,255,0.3)'

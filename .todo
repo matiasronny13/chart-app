@@ -1,0 +1,45 @@
+PENDING:
+resolve MUI warning by adding defaultValue={""} to the select components
+remove tradeData and just pass variable directly to the renderer
+move websocketSymbolMapping to displaySymbolMapping
+change default symbol & timeframe mapping to internal codes (becareful with timeframe)
+tooltip zoon in
+convert features into extension style
+extension to get token 
+drawing tool
+try to move all non state related code out of react component (create classes)
+remove unrequired useRef
+
+DONE:
+adjust 4h realtime data
+create function to determine volume color
+show error when date from is later than  date to
+timeframe selection is not rendered in the correct order
+when changing timeframe, it leaves 1 bar during transitioni
+remove countback when from & to are different
+fix centering after zoom, sometimes the target is showing at the corner
+zoomin across timeframe by selection or mouse click
+move toolbar into seperate component
+zoomin need to update toolbar state
+add detail into alerts
+trigger alarm based on supabase message
+option to show TP and SL
+show trades from topstep
+fetch daily levels from topstep
+move useEffect to App
+remove updateSubscription, removeSubscription from App.tsx (replace with usecontext)
+apply theme to text and button color
+layout
+use context and customhook like topstepx
+schedule topstep heartbeat
+_realtimeInstrumentPool should implement Set of id string instead of array
+
+CANCELED:
+use debounced on the dataFetch instead of mouse event handler
+add 1000 to timestamp in the dataFetch
+check chart options allowShiftVisibleRangeOnWhitespaceReplacement, lastPriceAnimation, and others from plugin samples
+error in footer bar
+Get Accounts from API
+color picker for levels
+returned functions from customhook need to be callback internally
+preload accounts inside context
