@@ -11,6 +11,31 @@ export type TKeyValueString = {
     [key: string]: string;
 };
 
+export type TKeyValueSymbolMetadata = {
+    [key: string]: TSymbolMetadata
+};
+
+export type TSymbolMetadata = {
+    symbol: string
+    friendlyName: string
+    fullName: string
+    description: string
+    maturityMonthYear: string
+    contractId: number
+    tickSize: number
+    tickValue: number
+    contractCost: number
+    fees: number
+    marketGroupId: number
+    decimalPlaces: number
+    priceScale: number
+    minMove: number
+    fractionalPrice: boolean
+    exchange: string
+    minMove2: number
+    disabled: boolean
+}
+
 export type TRealtimrPriceLine = {
     distance: number 
     upperLine: IPriceLine|undefined
@@ -73,4 +98,22 @@ export type TDataConfig = {
 export type TCustomSeriesApi<TData> = {
     symbol: string
     series: ISeriesApi<"Custom", Time, TData>
+}
+
+export type TPositionJson = {
+    id: number
+    symbolId: string
+    symbolName: string
+    positionSize: number
+    stopLoss: number
+    takeProfit: number
+    toMake: number
+    risk: number
+    averagePrice: number
+    profitAndLoss: number
+    entryTime: string
+    accountId: number
+    stopLossOrderId: number
+    takeProfitOrderId: number
+    contractId: string
 }

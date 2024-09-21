@@ -2,7 +2,7 @@ import { MutableRefObject, RefObject, useCallback, useRef } from "react"
 import { CandlestickData, createChart, CustomData, HistogramData, IChartApi, IPriceLine, ISeriesApi, ISeriesPrimitive, LineStyle, MouseEventParams, SeriesMarker, Time, UTCTimestamp } from "lightweight-charts"
 import { candlestickOptions, chartOptions, volumeOptions } from "../components/chart/chartOptions"
 import useDebounce from "./useDebounce"
-import { TDataConfig, TLevelDetail, TRealtimeEventData, TRealtimeQuoteData, TRealtimrPriceLine, TiltJson, TTrade, TCustomSeriesApi } from "../shared/types.ts"
+import { TDataConfig, TLevelDetail, TRealtimeEventData, TRealtimeQuoteData, TRealtimrPriceLine, TiltJson, TTrade, TCustomSeriesApi, TPositionJson } from "../shared/types.ts"
 import { CustomPrimitiveType, CustomSeriesType, StreamEvent } from "../shared/constants.ts"
 import hookConfig from "../configs/appConfig.ts"
 import { UserPriceAlerts } from "../plugins/user-price-alerts/user-price-alerts.ts"
@@ -16,6 +16,8 @@ import { SubscriptionManager } from "./SubscriptionManager.ts"
 import { TiltSeries } from "../plugins/tilt-series/tilt-series.ts"
 import { TiltData } from "../plugins/tilt-series/data.ts"
 import { TiltSeriesOptions } from "../plugins/tilt-series/options.ts"
+import { TShadowOrderDialogRef } from "../components/chart/ShadowOrderDialog.tsx"
+import ShadowOrder from "../plugins/shadow-order/shadow-order.ts"
 
 
 export interface IChartService {
@@ -27,16 +29,19 @@ export interface IChartService {
     updateLevels: (selectedValues:Map<string, TLevelDetail>) => void
     initializeChart: () => void
     disposeChart: () => void
+    toogleShadowOrder:(isChecked:boolean) => void
+    updateShadowOrder: (size: number, stop: number) => void
 }
 
 type TProps = {
     onStateChanged: (state: TDataConfig) => void
+    openAlertDetail: (event:Event) => void
     chartContainer: MutableRefObject<HTMLDivElement>
     topOverlayContainer: RefObject<ITopOverlay>
-    openAlertDetail: (event:Event) => void
+    shadowOrderDialogRef: RefObject<TShadowOrderDialogRef>
 }
 
-const useChart = ({onStateChanged, chartContainer, topOverlayContainer, openAlertDetail}: TProps): IChartService => {
+const useChart = ({onStateChanged, openAlertDetail, chartContainer, topOverlayContainer, shadowOrderDialogRef}: TProps): IChartService => {
     const appContext = useAppContext()
     const userContext = useUserContext()
     const chartContext = useChartContext()
@@ -353,7 +358,7 @@ const useChart = ({onStateChanged, chartContainer, topOverlayContainer, openAler
     const toogleTradeReport = (accountId:number, isChecked:boolean) => {
         candlestickSeries.current?.setMarkers([])
         removeAllTradeLines()
-        
+        userContext.Trade.tradeData = []
         if(isChecked) {
             // Download trades for all symbols
             userContext.Trade.getAllByAccountId(accountId).then(() => {
@@ -449,6 +454,36 @@ const useChart = ({onStateChanged, chartContainer, topOverlayContainer, openAler
         }
     }
 
+    const toogleShadowOrder = (isChecked:boolean) => {
+        if(isChecked) {
+            userContext.Position.getByUserId(Number(localStorage.getItem('topstep.userId') ?? 0)).then((positions: TPositionJson[]) => {
+                if(positions.length > 0) {
+                    const match:TPositionJson|undefined = positions.find(x => x.symbolName.replace("/", "") == paramState.current.symbol)
+                    if(match) { 
+                        shadowOrderDialogRef.current?.updateState({visible: true, size: match.positionSize, stop: match.risk})
+                        const shadowOrder = new ShadowOrder({actualPosition: {...match}, shadowPosition: {...match}, contractCost: hookConfig.symbolMetadata[hookConfig.websocketSymbolMapping[paramState.current.symbol]].contractCost}, {})
+                        candlestickSeries.current?.attachPrimitive(shadowOrder)
+                        customPrimitiveMap.current.set(CustomPrimitiveType.ShadowOrder, shadowOrder)
+                    }
+                }
+            })
+        }
+        else {
+            shadowOrderDialogRef.current?.updateState({visible: false, size: 0, stop: 0})
+            const shadowOrder = customPrimitiveMap.current.get(CustomPrimitiveType.ShadowOrder) as ShadowOrder
+            if(shadowOrder) {
+                shadowOrder.forceUpdate() //trigger requestUpdate()
+                candlestickSeries.current?.detachPrimitive(shadowOrder)
+                customPrimitiveMap.current.delete(CustomPrimitiveType.ShadowOrder)
+            }
+        }
+    }
+
+    const updateShadowOrder = (size: number, stop: number) => {
+        const shadowOrder = customPrimitiveMap.current.get(CustomPrimitiveType.ShadowOrder) as ShadowOrder
+        shadowOrder.updateShadowOrder(size, stop)
+    }
+
     return {
         updateState,
         toogleRealtimePriceLine,
@@ -457,7 +492,9 @@ const useChart = ({onStateChanged, chartContainer, topOverlayContainer, openAler
         updateLevels,
         initializeChart,
         disposeChart,
-        toogleTilt
+        toogleTilt,
+        toogleShadowOrder,
+        updateShadowOrder
     }
 }
 

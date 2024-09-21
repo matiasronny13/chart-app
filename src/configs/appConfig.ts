@@ -1,10 +1,11 @@
-import { defaultParam, displaySymbolMapping, timeframeOptions, websocketSymbolMapping } from "./topstep";
+import { TKeyValueSymbolMetadata } from "../shared/types";
+import { defaultParam, timeframeOptions, websocketSymbolMapping } from "./topstep";
 
 const hookConfig = {
     defaultParam,
     websocketSymbolMapping,
-    displaySymbolMapping,
-    timeframeOptions
+    timeframeOptions,
+    symbolMetadata: {} as TKeyValueSymbolMetadata
 };
 
 export default hookConfig;

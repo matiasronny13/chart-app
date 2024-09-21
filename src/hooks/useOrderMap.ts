@@ -3,6 +3,7 @@ import { MutableRefObject } from "react"
 import { chartOptions } from "../components/chart/chartOptions"
 import { TiltData } from "../plugins/tilt-series/data"
 import { TiltSeries } from "../plugins/tilt-series/tilt-series"
+import ShadowOrder from "../plugins/shadow-order/shadow-order"
 
 type TProps = {
     chartContainer:MutableRefObject<HTMLDivElement>
@@ -55,6 +56,37 @@ const useOrderMap = ({chartContainer}:TProps):TOrderMapService => {
             const data: (TiltData | WhitespaceData)[] = initialData
             myCustomSeries.setData(data);
             chart.timeScale().fitContent();
+            
+            const actualPosition = {
+                "positionSize": 1,
+                "stopLoss": 20.500000000,
+                "takeProfit": 62.500000000,
+                "toMake": 2000.000000000,
+                "risk": 1998.000000000,
+                "averagePrice": 33.500000000,
+                "profitAndLoss": -1.000000000
+            }
+            const shadowPosition = {
+                "positionSize": 1,
+                "stopLoss": 21.500000000,
+                "takeProfit": 60.500000000,
+                "toMake": 2000.000000000,
+                "risk": 1998.000000000,
+                "averagePrice": 30.500000000,
+                "profitAndLoss": -1.000000000
+            }
+            const shadowOrder = new ShadowOrder({actualPosition, shadowPosition, contractCost: 10}, {});
+            myCustomSeries.attachPrimitive(shadowOrder);
+
+            chart.subscribeClick((_) => {
+                //shadowOrder.increaseAveragePrice()
+                const lastTime = myCustomSeries.data().at(-1)?.time  as number + 1
+                myCustomSeries.update({
+                    time: lastTime as UTCTimestamp,
+                    bias: 72,
+                    avgPrice: 72
+                })
+            })
         }
     }
 

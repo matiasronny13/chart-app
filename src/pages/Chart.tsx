@@ -30,6 +30,10 @@ function Chart() {
 
     onLevelSubmitted: (selectedValues: Map<string, TLevelDetail>) => {
       chartRef.current?.updateLevels(selectedValues)
+    },
+
+    onShadowOrderChanged: (isChecked: boolean) => {
+      chartRef.current?.toogleShadowOrder(isChecked)
     }
   }
 

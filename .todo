@@ -1,4 +1,7 @@
 PENDING:
+bring selected account to the context, and remove onAccountChanged in Toolbar.tsx (move fetch logic to the corresponding components)
+bring subscription manager to the top level as singleton to accomodate multiple chart instances
+when get trade failed,  _tradeData needs to be emptied
 resolve MUI warning by adding defaultValue={""} to the select components
 remove tradeData and just pass variable directly to the renderer
 move websocketSymbolMapping to displaySymbolMapping

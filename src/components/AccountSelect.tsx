@@ -21,28 +21,26 @@ type TDbAccount = {
 const AccountSelect = forwardRef<TAccountSelectRef, TProps>(({accountChanged}, ref) => {
     const userContext = useUserContext()
     const [accounts, setAccounts] = useState<TAccount[]>([])
-    const [selectedAccount, setSelectedAccount] = useState<number>(0)
     
     const onAccountChanged = (event:SelectChangeEvent<unknown>) => {
         const selected = Number(event.target.value)
-        setSelectedAccount(selected)
+        userContext.Account.selectedAccount = selected
         accountChanged(selected)
     }
 
     useEffect(() => {
         userContext.Account.getAll().then((a) => {
             const accs = a as TDbAccount[]
-            setSelectedAccount(accs[0].id)
             setAccounts(accs.map((x:TDbAccount) => ({accountId: x.id, accountName: x.name, accountType: x.accountType} as TAccount)))
         })
     }, [])
 
     useImperativeHandle(ref, () => ({
-            currentSelectedAccount: () => selectedAccount
+            currentSelectedAccount: () => userContext.Account.selectedAccount
         })
     )
 
-    return (<StyledSelect variant="standard" margin="none" value={selectedAccount} onChange={onAccountChanged} sx={{width:120}}>
+    return (<StyledSelect variant="standard" margin="none" value={userContext.Account.selectedAccount} onChange={onAccountChanged} sx={{width:120}}>
         {
             accounts.map(item => <MenuItem key={item.accountId} value={item.accountId}>
                 <Typography noWrap

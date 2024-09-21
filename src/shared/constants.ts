@@ -3,7 +3,8 @@ export const realtime_event = "realtime_event_data"
 export enum CustomPrimitiveType {
     Alert,
     Trade,
-    Levels
+    Levels,
+    ShadowOrder
 }
 
 export enum CustomSeriesType {

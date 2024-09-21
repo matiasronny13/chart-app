@@ -20,6 +20,7 @@ export type TToolbarEventHandlers = {
     onTiltChanged: (isChecked:boolean) => void
     onTradeReportChanged: (accountId:number, isChecked:boolean) => void
     onLevelSubmitted: (selectedValues:Map<string, TLevelDetail>) => void
+    onShadowOrderChanged: (isChecked:boolean) => void
 }
 
 export interface IToolbarRef {
@@ -111,6 +112,7 @@ const Toolbar = forwardRef<IToolbarRef, TProps>(({eventHandlers}, ref) => {
             <DailyLevelDialog onSubmit={onLevelSubmit}></DailyLevelDialog>
             <Tooltip title="Show Tilt"><FormControlLabel control={<Switch defaultChecked={false} onChange={onTiltChanged} />} label="Tilt" /></Tooltip>
             <Tooltip title="Show Trades"><FormControlLabel control={<Switch defaultChecked={false} onChange={updateTradeReport} />} label="Trades" /></Tooltip>
+            <Tooltip title="Show Shadow Order"><FormControlLabel control={<Switch defaultChecked={false} onChange={(event:ChangeEvent<HTMLInputElement>) => { eventHandlers.onShadowOrderChanged(event.currentTarget.checked)}} />} label="Shadow" /></Tooltip>
         </Box>
     )
 })

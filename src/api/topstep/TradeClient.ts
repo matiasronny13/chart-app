@@ -9,7 +9,11 @@ export class TradeClient {
     }
 
     get tradeData() {
-        return this._tradeData
+        return this._tradeData ?? []
+    }
+
+    set tradeData(data:TTrade[]) {
+        this._tradeData = data
     }
 
     async getAllByAccountId(accountId:number):Promise<unknown[]> {
